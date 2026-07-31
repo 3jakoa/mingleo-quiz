@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mingleo Match Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=Fredoka:wght@600;700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF6F0;
+    --card: #FFFFFF;
+    --card-border: #E9E1D6;
+    --gold: #C1522E;
+    --gold-soft: rgba(193,82,46,0.10);
+    --cream: #241F1A;
+    --cream-dim: #746D63;
+    --coral: #C1522E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: 'Work Sans', sans-serif;
+    min-height: 100vh;
+    overflow: auto;
+    color: var(--cream);
+  }
+
+  .phone {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    background: radial-gradient(circle at 50% -10%, #FFFDFA 0%, var(--bg) 60%);
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(193,82,46,0.16) 0%, rgba(193,82,46,0.09) 25%, rgba(193,82,46,0.04) 45%, rgba(193,82,46,0.015) 65%, transparent 88%);
+    pointer-events: none;
+  }
+
+  .topbar {
+    padding: 28px 26px 0;
+    position: relative;
+    z-index: 2;
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .brand-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .brand-logo-full {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+
+  .brand-tag {
+    display: block;
+    width: fit-content;
+    text-align: center;
+    font-size: 10.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold);
+    background: var(--gold-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+    margin: 0 auto 16px;
+  }
+
+  .step-label {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .progress-track {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .progress-seg {
+    height: 4px;
+    flex: 1;
+    border-radius: 4px;
+    background: var(--card-border);
+    overflow: hidden;
+  }
+
+  .progress-seg.done { background: var(--gold); }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 26px 26px;
+    position: relative;
+    z-index: 2;
+    min-height: 0;
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    animation: rise 0.35s ease;
+  }
+
+  .screen.active { display: flex; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Intro screen */
+  .intro { justify-content: center; align-items: center; text-align: center; gap: 18px; }
+
+  .intro .eyebrow {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .intro h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.15;
+    margin: 0;
+    color: var(--cream);
+  }
+
+  .intro p {
+    color: var(--cream-dim);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 260px;
+  }
+
+  #reactionText {
+    white-space: pre-line;
+  }
+
+  .candle-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin: 4px 0;
+  }
+
+  .quiz-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .quiz-option-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    width: 100%;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.55);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .quiz-option-card:hover {
+    border-color: var(--gold);
+    background: #FBF1EA;
+  }
+
+  .quiz-option-eyebrow {
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .quiz-option-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--cream);
+  }
+
+  .intro-facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--cream-dim);
+    margin: 2px 0 6px;
+  }
+
+  /* Question screen */
+  .q-head {
+    margin-bottom: 28px;
+  }
+
+  .q-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.3;
+    margin: 0;
+    color: var(--cream);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .open-ended-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding-top: 8px;
+    width: 100%;
+  }
+
+  .option {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--cream);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .option:hover { border-color: var(--gold); background: #FBF1EA; }
+  .option:active { transform: scale(0.985); }
+
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: #FFFDFA;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--cream-dim);
+    border: none;
+    padding: 6px;
+    font-size: 13.5px;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    text-decoration: underline;
+  }
+
+  .search-screen,
+  .matches-screen {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Events list screen */
+  .events-screen {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .events-heading {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.2;
+    color: var(--cream);
+    margin: 0 0 18px;
+  }
+
+  .city-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--cream);
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .city-pill {
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .city-chevron {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
+    color: var(--gold);
+    transition: transform 0.15s ease;
+  }
+
+  .city-chevron.open {
+    transform: rotate(180deg);
+  }
+
+  .city-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #FFFDFA;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.14);
+    max-height: 260px;
+    overflow-y: auto;
+    width: 240px;
+    z-index: 20;
+    padding: 6px;
+  }
+
+  .city-dropdown.open {
+    display: block;
+  }
+
+  .city-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--cream);
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .city-option:hover {
+    background: #FBF1EA;
+  }
+
+  .city-option.selected {
+    background: var(--gold-soft);
+    font-weight: 700;
+  }
+
+  .event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .event-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .event-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .event-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #E4EEF7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+  }
+
+  .event-type {
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--cream-dim);
+    margin-bottom: 2px;
+  }
+
+  .event-date {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 13px;
+    color: var(--cream-dim);
+  }
+
+  .book-btn {
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  /* Event details screen */
+  .event-card-detail {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .event-status-badge {
+    display: inline-block;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin: 10px 0 10px;
+  }
+
+  .event-card-detail h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    margin: 0 0 8px;
+    color: var(--cream);
+  }
+
+  .cancel-booking-btn {
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .cancel-note {
+    font-size: 12.5px;
+    color: var(--cream-dim);
+    font-style: italic;
+    text-align: center;
+    margin: 10px 0 22px;
+  }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+
+  .info-card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--cream);
+    margin: 0 0 8px;
+  }
+
+  .info-card p {
+    font-size: 13.5px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+
+  .info-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-card-warning {
+    color: var(--gold) !important;
+    font-weight: 700;
+  }
+
+  #screen-edit-questions {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .editq-hint {
+    font-size: 13.5px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+    margin: 0 0 20px;
+  }
+
+  .editq-block {
+    margin-bottom: 16px;
+  }
+
+  .editq-block label {
+    display: block;
+    font-size: 11.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .editq-block textarea {
+    width: 100%;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14.5px;
+    color: var(--cream);
+    background: var(--card);
+    resize: vertical;
+  }
+
+  .editq-block textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: #FBF1EA;
+  }
+
+  #filmNote1[contenteditable="true"],
+  #filmNote2[contenteditable="true"],
+  #filmNote3[contenteditable="true"] {
+    outline: 1.5px dashed var(--gold);
+    outline-offset: 4px;
+    border-radius: 6px;
+    background: #FBF1EA;
+  }
+
+  .filmnote-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .filmnote-controls .btn-primary {
+    padding: 10px 16px;
+    font-size: 13.5px;
+  }
+
+  /* Booking confirmation modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(36,31,26,0.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-card {
+    background: var(--bg);
+    border-radius: 24px;
+    padding: 32px 26px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+  }
+
+  .modal-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .modal-dots span {
+    width: 24px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--card-border);
+  }
+
+  .modal-dots span.active {
+    background: var(--cream);
+  }
+
+  .modal-heading {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--cream);
+    margin: 0 0 18px;
+  }
+
+  .modal-emoji {
+    font-size: 46px;
+    margin-bottom: 18px;
+  }
+
+  .modal-text {
+    font-size: 14px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+    margin: 0 0 22px;
+  }
+
+  .search-screen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .radar {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background:
+      radial-gradient(circle, rgba(193,82,46,0.20) 0 6%, transparent 7%),
+      radial-gradient(circle, transparent 0 31%, rgba(193,82,46,0.18) 32% 33%, transparent 34% 58%, rgba(193,82,46,0.12) 59% 60%, transparent 61%),
+      conic-gradient(from 0deg, rgba(193,82,46,0.32), rgba(193,82,46,0.14) 16%, transparent 38%),
+      radial-gradient(circle, rgba(193,82,46,0.05) 0%, rgba(193,82,46,0.02) 62%, transparent 100%);
+    position: relative;
+    animation: spin 2.2s linear infinite;
+    box-shadow: inset 0 0 34px rgba(193,82,46,0.10), 0 18px 34px rgba(0,0,0,0.08);
+  }
+
+  .radar::before,
+  .radar::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 6px rgba(193,82,46,0.14);
+  }
+
+  .radar::before { top: 44px; left: 100px; }
+  .radar::after { bottom: 42px; left: 48px; animation: pulse 1.2s ease-in-out infinite; }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(0.9); opacity: 0.62; }
+    50% { transform: scale(1.16); opacity: 1; }
+  }
+
+  .search-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    line-height: 1.14;
+    margin: 0;
+    color: var(--cream);
+  }
+
+  .search-status {
+    min-height: 42px;
+    max-width: 270px;
+    color: var(--cream-dim);
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .match-count {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 10px 16px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+  }
+
+  .match-count strong {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 30px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .match-count span {
+    color: var(--cream-dim);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .search-steps {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .search-step {
+    border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.58);
+    border-radius: 12px;
+    padding: 11px 13px;
+    color: var(--cream-dim);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .search-step.done {
+    color: var(--cream);
+    background: #FFFDFA;
+    border-color: rgba(193,82,46,0.32);
+  }
+
+  .pref-header {
+    display: grid;
+    grid-template-columns: 52px 1fr 52px;
+    align-items: center;
+    gap: 8px;
+    margin: -2px -2px 28px;
+  }
+
+  .back-circle {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    background: #FFFDFA;
+    color: var(--cream);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .pref-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+
+  .pref-progress {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    max-width: 180px;
+    margin: 0 auto;
+  }
+
+  .pref-progress span {
+    height: 5px;
+    border-radius: 999px;
+    background: var(--card-border);
+  }
+
+  .pref-progress span.done {
+    background: var(--cream);
+  }
+
+  .matches-screen.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  .matches-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .dinner-table-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 36px auto 0;
+  }
+
+  .dinner-table-wrap::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(193,82,46,0.14) 0%, rgba(193,82,46,0.05) 45%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .dinner-table-wrap .dinner-table {
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-cta-glow {
+    padding: 19px;
+    font-size: 16.5px;
+    box-shadow: 0 10px 28px rgba(193,82,46,0.32);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .matches-screen .result-actions {
+    margin-top: 34px;
+  }
+
+  .btn-cta-glow:active {
+    transform: scale(0.98);
+    box-shadow: 0 6px 16px rgba(193,82,46,0.28);
+  }
+
+  .matches-head {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .dinner-table {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: 36px auto 0;
+  }
+
+  .matches-title {
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
+    line-height: 1.12;
+    margin: 0 0 10px;
+    color: var(--cream);
+  }
+
+  .matches-tagline {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--gold);
+    margin: 0 0 26px;
+  }
+
+  .table-top {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #FFFDFA 0%, var(--bg) 70%);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08), inset 0 0 0 6px rgba(193,82,46,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+  }
+
+  .seat {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 700;
+  }
+
+  .seat.filled {
+    background: var(--gold);
+    color: #FFFDFA;
+    box-shadow: 0 6px 14px rgba(193,82,46,0.28);
+  }
+
+  .seat.open {
+    background: #FFFDFA;
+    border: 1.5px dashed var(--card-border);
+  }
+
+  .seat-1 { left: 50%; top: 6%; }
+  .seat-2 { left: 87%; top: 27%; }
+  .seat-3 { left: 87%; top: 73%; }
+  .seat-4 { left: 50%; top: 94%; }
+  .seat-5 { left: 13%; top: 73%; }
+  .seat-6 { left: 13%; top: 27%; }
+
+  .start-btn {
+    background: var(--gold);
+    color: #FFFDFA;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 30px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    margin-top: 6px;
+  }
+
+  .home-indicator {
+    width: 120px;
+    height: 4px;
+    background: var(--card-border);
+    border-radius: 4px;
+    margin: 10px auto 14px;
+  }
+
+  .editor-screen {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .editor-note {
+    font-size: 12.5px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+    margin: 0 0 18px;
+  }
+
+  .editor-section {
+    margin-bottom: 22px;
+  }
+
+  .editor-section-title {
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+
+  .editor-question-block {
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.55);
+  }
+
+  .editor-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--cream-dim);
+    margin: 2px 0 12px;
+    cursor: pointer;
+  }
+
+  .editor-toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .editor-field {
+    margin-bottom: 12px;
+  }
+
+  .editor-field:last-child {
+    margin-bottom: 0;
+  }
+
+  .editor-field label {
+    display: block;
+    font-size: 11.5px;
+    color: var(--cream-dim);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .editor-field textarea,
+  .editor-field input {
+    width: 100%;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    color: var(--cream);
+    background: #FFFDFA;
+    resize: vertical;
+  }
+
+  /* Responsive: wider viewports get a roomier, desktop-style layout
+     automatically — no manual toggle needed. */
+  @media (min-width: 700px) {
+    .home-indicator {
+      display: none;
+    }
+
+    .glow {
+      width: 640px;
+      height: 640px;
+      top: 0;
+    }
+
+    .topbar {
+      padding: 56px 0 0;
+      max-width: 560px;
+    }
+
+    .content {
+      max-width: 560px;
+      padding: 24px 0 64px;
+      min-height: calc(100vh - 120px);
+    }
+
+    .intro h1 {
+      font-size: 46px;
+    }
+
+    .intro p {
+      font-size: 17px;
+      max-width: 360px;
+    }
+
+    .q-head h2 {
+      font-size: 30px;
+    }
+
+    .option {
+      font-size: 16.5px;
+      padding: 20px 24px;
+    }
+
+    .matches-title,
+    .search-title {
+      font-size: 32px;
+    }
+
+    .editor-screen {
+      max-width: 640px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="glow"></div>
+
+
+  <div class="topbar" id="topbar">
+    <div id="brandBlock" style="display:none;">
+    <div class="brand-row">
+      <img class="brand-logo-full" src="data:image/png;base64,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" alt="Mingleo">
+    </div>
+    <div class="brand-tag">Curated dinners for gay men</div>
+    </div>
+    <div id="progressWrap" style="display:none;">
+      <div class="step-label" id="stepLabel">Question 1 of 7</div>
+      <div class="progress-track" id="progressTrack"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- QUIZ PICKER — first screen creators see -->
+    <div class="screen intro" id="screen-quiz-picker">
+      <div class="eyebrow">Creator setup</div>
+      <h1>Choose your<br>quiz</h1>
+      <div class="candle-divider"></div>
+      <div class="info-card" style="text-align:left;">
+        <p class="info-card-title">🎯 Who you're filming for</p>
+        <p>A gay man who feels lonely, has tried every dating app, and still hasn't found his "third space" — someone who wants real connection, not another swipe. Keep him in mind for every question and every word.</p>
+      </div>
+      <p>You know your audience best — rewrite the questions to fit your vibe before you film. The wording is what actually makes it go viral.</p>
+      <button class="btn-primary" onclick="openQuestionEditor()">✏️ Edit questions &amp; wording</button>
+      <p class="editq-hint" style="margin: 18px 0 0;">Or start with the default questions:</p>
+      <div class="quiz-picker-list" id="quizPickerList"></div>
+    </div>
+
+    <!-- EDIT QUESTIONS — creator-only, lets them rewrite the quiz's Yes/No
+         questions themselves and download an updated file to upload, with
+         no chat/coding needed. -->
+    <div class="screen" id="screen-edit-questions">
+      <div class="pref-header">
+        <button class="back-circle" onclick="showScreen('screen-quiz-picker')">‹</button>
+        <div class="pref-title">Edit content</div>
+        <div></div>
+      </div>
+      <p class="editq-hint">Rewrite any question, the matches headline, or the button text below, then save. Yes/No answers stay fixed.</p>
+      <div id="editQuestionsList"></div>
+      <div class="editq-block">
+        <label>Matches screen headline</label>
+        <textarea id="editHeadline" rows="2"></textarea>
+      </div>
+      <div class="editq-block">
+        <label>Button text</label>
+        <textarea id="editCta" rows="1"></textarea>
+      </div>
+      <div class="result-actions">
+        <button type="button" class="btn-primary" onclick="saveQuestionsAndDownload()">Save &amp; download file</button>
+      </div>
+    </div>
+
+    <!-- INTRO (this is what gets filmed) -->
+    <div class="screen intro" id="screen-intro">
+      <div class="eyebrow" id="introEyebrow">The Mingleo Dateability Quiz</div>
+      <h1 id="introHeading">How Dateable<br>Are You?</h1>
+      <div class="candle-divider"></div>
+      <p id="introSubtext">Five questions. Zero filter. Let's see the damage.</p>
+      <div class="intro-facts">
+        <span>🍽️ Real dinners</span>
+        <span>👬 Gay men only</span>
+        <span>🪑 Tables of 4–8</span>
+      </div>
+      <button class="start-btn" onclick="startQuiz()">Start the quiz</button>
+    </div>
+
+    <!-- QUESTIONS injected here -->
+    <div id="questionsMount"></div>
+
+    <!-- REACTION (optional, shown after questions if the creator enables it) -->
+    <div class="screen intro" id="screen-reaction">
+      <div class="eyebrow" id="reactionTag">mingleo's read on you</div>
+      <h1 id="reactionTitle">Okay, we see you.</h1>
+      <div class="candle-divider"></div>
+      <p id="reactionText">Based on everything you just said, we've already got a table in mind.</p>
+      <button class="start-btn" onclick="startMatchSearch()">See my matches</button>
+    </div>
+
+    <!-- MATCH SEARCH -->
+    <div class="screen search-screen" id="screen-search">
+      <div class="radar"></div>
+      <div class="match-count">
+        <strong id="loadingCount">0</strong>
+        <span>men found</span>
+      </div>
+      <h2 class="search-title">Finding your<br>best matches</h2>
+      <p class="search-status" id="searchStatus">Reading your alignment...</p>
+      <div class="search-steps">
+        <div class="search-step" id="step-compat">Checking compatibility patterns</div>
+        <div class="search-step" id="step-area">Searching men in your area</div>
+        <div class="search-step" id="step-vibe">Filtering for matching energy</div>
+      </div>
+    </div>
+
+    <!-- MATCHES -->
+    <div class="screen matches-screen" id="screen-matches">
+      <button class="back-circle matches-back" onclick="resetQuiz()">‹</button>
+      <div class="matches-head">
+        <h2 class="matches-title" id="matchesTitle">We found compatible men for you</h2>
+        <p class="matches-tagline" id="matchesTagline">One table. One dinner. No swiping.</p>
+        <div class="dinner-table-wrap">
+          <div class="dinner-table">
+            <div class="table-top">🍽️</div>
+            <div class="seat filled seat-1">✓</div>
+            <div class="seat filled seat-2">✓</div>
+            <div class="seat filled seat-3">✓</div>
+            <div class="seat filled seat-4">✓</div>
+            <div class="seat open seat-5"></div>
+            <div class="seat open seat-6"></div>
+          </div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-primary btn-cta-glow" id="matchesCta" onclick="showEventsScreen()">Meet them</button>
+      </div>
+    </div>
+
+    <!-- EVENTS LIST — shown after finding matches, mirrors the real Mingleo booking flow -->
+    <div class="screen events-screen" id="screen-events">
+      <h1 class="events-heading">New Connections,<br>Lifelong Bonds.</h1>
+      <div class="city-row">
+        <span>Next events in</span>
+        <button type="button" class="city-pill" id="cityPill" onclick="toggleCityDropdown()">
+          <span id="cityPillFlag">🇺🇸</span> <span id="cityPillName">Los Angeles, US</span>
+          <svg class="city-chevron" id="cityChevron" viewBox="0 0 12 8" width="10" height="7" fill="none">
+            <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <div class="city-dropdown" id="cityDropdown"></div>
+      </div>
+      <div class="event-list" id="eventList"></div>
+    </div>
+
+    <!-- EVENT DETAILS — shown after booking -->
+    <div class="screen" id="screen-event-details">
+      <div class="pref-header">
+        <button class="back-circle" onclick="showScreen('screen-events')">‹</button>
+        <div class="pref-title">Event Details</div>
+        <div></div>
+      </div>
+      <div class="event-card-detail">
+        <div class="event-icon">🍴</div>
+        <span class="event-status-badge">Reserved</span>
+        <h2 id="eventDetailDate">Thursday, August 6</h2>
+        <div class="event-meta">
+          <span>🕐 <span id="eventDetailTime">7:00 PM</span></span>
+          <span>📍 <span id="eventDetailLocation">West Hollywood Los Angeles</span></span>
+        </div>
+      </div>
+      <button class="cancel-booking-btn" onclick="cancelBooking()">Cancel Booking</button>
+      <p class="cancel-note">Your group is counting on you being there. If you can't make it, please cancel.</p>
+
+      <div class="info-card">
+        <p class="info-card-title">⚠️ Confirmation required</p>
+        <p>Your spot is reserved, but you'll still need to confirm your attendance.</p>
+        <p class="info-card-warning">Only guests who confirm will be included in the event.</p>
+        <p>Your 48h confirmation window opens on <strong>August 2, 19:00</strong>.</p>
+      </div>
+
+      <div class="info-card">
+        <p class="info-card-title">🎁 Location</p>
+        <p>Every meetup has a little surprise element to enjoy: exact location details are revealed 24 hours before the event! This ensures you get matched with people you'll enjoy.</p>
+        <p>Every venue is hand-picked by our team: centrally located, safe, easy to reach, and highly rated by our members.</p>
+      </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="screen editor-screen" id="screen-editor">
+      <div class="pref-header">
+        <button class="back-circle" onclick="closeEditor()">‹</button>
+        <div class="pref-title">Edit prompts</div>
+        <div></div>
+      </div>
+      <div id="editorForm"></div>
+      <div class="result-actions">
+        <button class="btn-primary" onclick="saveEditor()">Save &amp; preview</button>
+        <button class="btn-ghost" onclick="resetEditor()">Reset to default</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOOKING CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-card">
+      <div class="modal-dots"><span class="active"></span><span></span><span></span></div>
+      <h2 class="modal-heading">Your spot is reserved. Nice!</h2>
+      <div class="modal-emoji">🎉</div>
+      <p class="modal-text">Your group is counting on you being there. Last-minute cancellations and no-shows may be penalized.</p>
+      <button class="start-btn" onclick="confirmBooking()">I'll be there →</button>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+/* Captured immediately, before any other code runs or mutates the DOM.
+   Used later to produce a clean downloadable file when the creator
+   edits the filming-note text themselves (see saveFilmNoteAndDownload). */
+const pristineHTML = document.documentElement.outerHTML;
+
+/* ===================================================================
+   MULTI-QUIZ ARCHITECTURE
+   One hosted page, many quizzes, selected via ?quiz=<slug>.
+   To add a new quiz: add a new key to the `quizzes` object below.
+   No other code needs to change.
+   =================================================================== */
+
+/* ---------------------------------------------------------------
+   QUIZ REGISTRY
+   Every quiz lives here as one data object, keyed by the slug used
+   in the URL (e.g. /?quiz=alignment). To add a new quiz, add a new
+   key with the same shape — nothing else in this file needs to change.
+
+   Every quiz goes straight from its last question to the match-search
+   screen — there is no result/archetype screen in between.
+
+   Shape:
+     eyebrow / heading / subheading  -> intro screen copy
+     questions: [{ label, text, options: [{ text }, ...] }]
+   --------------------------------------------------------------- */
+const defaultQuizzes = {
+  matchtest: {
+    name: "Are You Ready to Meet Gay Men",
+    listed: true,
+    creator: "both",
+    eyebrow: "Start with a free matching test",
+    heading: "Are You Ready to<br>Meet Gay Men?",
+    subheading: "Three questions. Be honest.",
+    questions: [
+      {
+        label: "Question 1 of 3",
+        text: "Do you currently have more than 3 dating apps installed?",
+        options: [
+          { text: "Yes" },
+          { text: "No" }
+        ]
+      },
+      {
+        label: "Question 2 of 3",
+        text: "Have you texted \"wyd\" after 1am this month?",
+        options: [
+          { text: "Yes" },
+          { text: "No" }
+        ]
+      },
+      {
+        label: "Question 3 of 3",
+        text: "Are you still thinking about someone from 2019?",
+        options: [
+          { text: "Yes" },
+          { text: "No" }
+        ]
+      }
+    ],
+    showReaction: false
+  },
+  dateability: {
+    name: "How Dateable Are You",
+    eyebrow: "The Mingleo Dateability Quiz",
+    heading: "How Dateable<br>Are You?",
+    subheading: "Three questions. Zero filter. Let's see the damage.",
+    questions: [
+      {
+        label: "Question 1 of 3",
+        text: "It's 2am and someone texts \"you up?\" You:",
+        options: [
+          { text: "Type \"always\" before he finishes the sentence." },
+          { text: "Leave him on read till sunrise, like a functioning adult." },
+          { text: "Screenshot it for the group chat, reply \"who is this.\"" }
+        ]
+      },
+      {
+        label: "Question 2 of 3",
+        text: "Someone cancels on you last minute. You:",
+        options: [
+          { text: "Say it's fine, secretly relieved, put the sweatpants back on." },
+          { text: "Immediately text three backup options." },
+          { text: "Never speak to them again. Block. Consider moving cities." }
+        ]
+      },
+      {
+        label: "Question 3 of 3",
+        text: "Your last relationship ended because:",
+        options: [
+          { text: "We wanted different things (he wanted honesty, I wanted freedom)." },
+          { text: "I ghosted. No further comment." },
+          { text: "Honestly unclear. Still not over it." }
+        ]
+      }
+    ],
+    showReaction: true,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We see the pattern.",
+    reactionText: "Whatever that was... it's giving \"chronically almost-dateable.\" Good thing Mingleo curates real dinners with real men \u2014 way harder to ghost someone across a table."
+  },
+  "dateability-jack": {
+    name: "How Dateable Are You",
+    eyebrow: "The Mingleo Dateability Quiz",
+    heading: "How Dateable<br>Are You?",
+    subheading: "Three questions. Zero filter. Let's see the damage.",
+    questions: [
+      {
+        label: "Question 1 of 3",
+        text: "Your ideal first date is:",
+        options: [
+          { text: "A candlelit dinner where you actually talk." },
+          { text: "Something with activities so the silences don't get weird." },
+          { text: "Whatever's free, because I'm not paying to find out he's boring." }
+        ]
+      },
+      {
+        label: "Question 2 of 3",
+        text: "You find out he's talking to someone else too. You:",
+        options: [
+          { text: "Ask him directly." },
+          { text: "Quietly start talking to two people myself." },
+          { text: "Delete the app, join a monastery." }
+        ]
+      },
+      {
+        label: "Question 3 of 3",
+        text: "Someone says \"I love you\" first. You:",
+        options: [
+          { text: "Say it back immediately, mean it." },
+          { text: "Panic-laugh and change the subject." },
+          { text: "Already knew, already planning the wedding." }
+        ]
+      }
+    ],
+    showReaction: true,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We see the pattern.",
+    reactionText: "Whatever that was... it's giving \"chronically almost-dateable.\" Good thing Mingleo curates real dinners with real men \u2014 way harder to ghost someone across a table."
+  },
+  "dateability-dress": {
+    name: "How Dateable Are You",
+    eyebrow: "The Mingleo Dateability Quiz",
+    heading: "How Dateable<br>Are You?",
+    subheading: "Three questions. Zero filter. Let's see the damage.",
+    questions: [
+      {
+        label: "Question 1 of 3",
+        text: "Your friends describe your dating life as:",
+        options: [
+          { text: "A rom-com." },
+          { text: "A horror movie." },
+          { text: "A documentary nobody asked for." }
+        ]
+      },
+      {
+        label: "Question 2 of 3",
+        text: "He brings up marriage on date two. You:",
+        options: [
+          { text: "Into it, no notes." },
+          { text: "Politely finish your drink and leave." },
+          { text: "Start planning the registry." }
+        ]
+      },
+      {
+        label: "Question 3 of 3",
+        text: "A situationship ends. You:",
+        options: [
+          { text: "Immediately fine, onto the next." },
+          { text: "Write a very long voice memo about it." },
+          { text: "Never fine, will bring it up in future relationships unprompted." }
+        ]
+      }
+    ],
+    showReaction: true,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We see the pattern.",
+    reactionText: "Whatever that was... it's giving \"chronically almost-dateable.\" Good thing Mingleo curates real dinners with real men \u2014 way harder to ghost someone across a table."
+  },
+  problem: {
+    name: "Problem",
+    eyebrow: "The Mingleo Problem Quiz",
+    heading: "What's actually<br>the problem?",
+    subheading: "Answer honestly. We'll tell you what's really going on.",
+    scoreType: "votes",
+    questions: [
+      {
+        label: "Question 1 of 1",
+        text: "This quiz is still being written — check back soon.",
+        options: [
+          { text: "Got it, take me back", resultKey: "placeholder" }
+        ]
+      }
+    ],
+    results: {
+      placeholder: {
+        tag: "coming soon",
+        title: "More Coming Soon",
+        desc: "This quiz isn't live yet. Try the matching test in the meantime."
+      }
+    },
+    resultOrder: ["placeholder"],
+    showGrid: false,
+    showReaction: false,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We heard you.",
+    reactionText: "Based on everything you just said, we've got a good feeling about your table."
+  },
+  situationship: {
+    name: "Situationship",
+    eyebrow: "The Mingleo Situationship Quiz",
+    heading: "Is it a situationship,<br>or something real?",
+    subheading: "Answer honestly. We'll tell you exactly where you stand.",
+    scoreType: "votes",
+    questions: [
+      {
+        label: "Question 1 of 1",
+        text: "This quiz is still being written — check back soon.",
+        options: [
+          { text: "Got it, take me back", resultKey: "placeholder" }
+        ]
+      }
+    ],
+    results: {
+      placeholder: {
+        tag: "coming soon",
+        title: "More Coming Soon",
+        desc: "This quiz isn't live yet. Try the matching test in the meantime."
+      }
+    },
+    resultOrder: ["placeholder"],
+    showGrid: false,
+    showReaction: false,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We heard you.",
+    reactionText: "Based on everything you just said, we've got a good feeling about your table."
+  },
+  boyfriend: {
+    name: "Boyfriend",
+    eyebrow: "The Mingleo Boyfriend Quiz",
+    heading: "What kind of boyfriend<br>do you attract?",
+    subheading: "Answer honestly. The pattern doesn't lie.",
+    scoreType: "votes",
+    questions: [
+      {
+        label: "Question 1 of 1",
+        text: "This quiz is still being written — check back soon.",
+        options: [
+          { text: "Got it, take me back", resultKey: "placeholder" }
+        ]
+      }
+    ],
+    results: {
+      placeholder: {
+        tag: "coming soon",
+        title: "More Coming Soon",
+        desc: "This quiz isn't live yet. Try the matching test in the meantime."
+      }
+    },
+    resultOrder: ["placeholder"],
+    showGrid: false,
+    showReaction: false,
+    reactionTag: "mingleo's read on you",
+    reactionTitle: "We heard you.",
+    reactionText: "Based on everything you just said, we've got a good feeling about your table."
+  }
+};
+
+/* ---------------------------------------------------------------
+   PER-DEVICE PROMPT OVERRIDES
+   This override/editor system is still in the codebase (screen-editor,
+   openEditor/saveEditor/etc.) but there's no button wired to it anymore —
+   the "Edit prompts" button was removed from the creator setup screen.
+   Content changes now go through direct edits to this file instead.
+--------------------------------------------------------------- */
+let quizzes = {};
+
+function cloneQuiz(slug) {
+  return JSON.parse(JSON.stringify(defaultQuizzes[slug]));
+}
+
+function applyOverride(target, override) {
+  if (!override) return;
+  if (override.eyebrow !== undefined) target.eyebrow = override.eyebrow;
+  if (override.heading !== undefined) target.heading = override.heading;
+  if (override.subheading !== undefined) target.subheading = override.subheading;
+  if (override.showReaction !== undefined) target.showReaction = override.showReaction;
+  if (override.reactionTag !== undefined) target.reactionTag = override.reactionTag;
+  if (override.reactionTitle !== undefined) target.reactionTitle = override.reactionTitle;
+  if (override.reactionText !== undefined) target.reactionText = override.reactionText;
+  if (Array.isArray(override.questions)) {
+    override.questions.forEach((q, i) => {
+      if (!target.questions[i]) return;
+      if (q.text !== undefined) target.questions[i].text = q.text;
+      if (q.openEnded !== undefined) target.questions[i].openEnded = q.openEnded;
+      if (Array.isArray(q.options)) {
+        q.options.forEach((o, oi) => {
+          if (!target.questions[i].options[oi]) return;
+          if (o.text !== undefined) target.questions[i].options[oi].text = o.text;
+        });
+      }
+    });
+  }
+  if (override.results) {
+    Object.keys(override.results).forEach(key => {
+      if (!target.results || !target.results[key]) return;
+      const r = override.results[key];
+      if (r.tag !== undefined) target.results[key].tag = r.tag;
+      if (r.title !== undefined) target.results[key].title = r.title;
+      if (r.desc !== undefined) target.results[key].desc = r.desc;
+    });
+  }
+}
+
+function loadOverrides() {
+  Object.keys(defaultQuizzes).forEach(slug => {
+    quizzes[slug] = cloneQuiz(slug);
+    let raw = null;
+    try { raw = localStorage.getItem('mingleoQuizOverride_' + slug); } catch (e) { /* storage unavailable */ }
+    if (raw) {
+      try { applyOverride(quizzes[slug], JSON.parse(raw)); } catch (e) { /* corrupt override, ignore */ }
+    }
+  });
+}
+
+loadOverrides();
+
+const urlParams = new URLSearchParams(window.location.search);
+const requestedSlug = urlParams.get('quiz');
+let activeSlug = quizzes[requestedSlug] ? requestedSlug : 'matchtest';
+let activeQuiz = quizzes[activeSlug];
+
+let current = 0;
+let matchTimer = null;
+const answers = [];
+
+/* ---------------------------------------------------------------
+   MATCHES SCREEN CONTENT
+   Shown after every quiz, regardless of which quiz was taken —
+   so it's stored separately from the quiz registry above and
+   edited in its own section of the creator editor.
+--------------------------------------------------------------- */
+const defaultMatchesContent = {
+  title: "We found compatible men for you",
+  tagline: "One table. One dinner. No swiping.",
+  people: [
+    "unread texts: 47, replies: 2",
+    "has a plant he definitely named after an ex",
+    "cries during Pixar movies, denies it after",
+    "main character energy, side character texting habits",
+    "will send 12 TikToks before saying good morning"
+  ],
+  ctaText: "Meet them"
+};
+
+let matchesContent = {};
+
+function cloneMatchesContent() {
+  return JSON.parse(JSON.stringify(defaultMatchesContent));
+}
+
+function applyMatchesOverride(target, override) {
+  if (!override) return;
+  if (override.title !== undefined) target.title = override.title;
+  if (override.tagline !== undefined) target.tagline = override.tagline;
+  if (override.ctaText !== undefined) target.ctaText = override.ctaText;
+  if (Array.isArray(override.people)) {
+    override.people.forEach((p, i) => {
+      if (p !== undefined && target.people[i] !== undefined) target.people[i] = p;
+    });
+  }
+}
+
+function loadMatchesOverride() {
+  matchesContent = cloneMatchesContent();
+  let raw = null;
+  try { raw = localStorage.getItem('mingleoMatchesOverride'); } catch (e) { /* storage unavailable */ }
+  if (raw) {
+    try { applyMatchesOverride(matchesContent, JSON.parse(raw)); } catch (e) { /* corrupt override, ignore */ }
+  }
+}
+
+loadMatchesOverride();
+
+let selectedCreator = null;
+
+function buildQuizPicker() {
+  const mount = document.getElementById('quizPickerList');
+  const options = Object.keys(quizzes).filter(slug => quizzes[slug].listed && (quizzes[slug].creator === selectedCreator || quizzes[slug].creator === 'both'));
+  mount.innerHTML = options.map(slug => `
+    <button type="button" class="quiz-option-card" onclick="selectQuiz('${slug}')">
+      <span class="quiz-option-eyebrow">${escapeHtml(quizzes[slug].eyebrow)}</span>
+      <span class="quiz-option-name">${escapeHtml(quizzes[slug].name)}</span>
+    </button>
+  `).join('');
+}
+
+function selectQuiz(slug) {
+  if (!quizzes[slug]) return;
+  activeSlug = slug;
+  activeQuiz = quizzes[slug];
+  setIntroCopy();
+  buildQuestions();
+  buildProgress();
+  showScreen('screen-intro');
+}
+
+function setIntroCopy() {
+  document.getElementById('introEyebrow').textContent = activeQuiz.eyebrow;
+  document.getElementById('introHeading').innerHTML = activeQuiz.heading;
+  document.getElementById('introSubtext').textContent = activeQuiz.subheading;
+}
+
+function buildQuestions() {
+  const mount = document.getElementById('questionsMount');
+  mount.innerHTML = activeQuiz.questions.map((q, i) => `
+    <div class="screen" id="screen-q${i}">
+      <div class="q-head"><h2>${q.text}</h2></div>
+      ${q.openEnded ? `
+        <div class="open-ended-wrap">
+          <button class="start-btn" onclick="advanceQuestion(${i})">Continue</button>
+        </div>
+      ` : `
+        <div class="options">
+          ${q.options.map((opt, oi) => `<button class="option" onclick="answer(${i}, ${oi})">${opt.text}</button>`).join('')}
+        </div>
+      `}
+    </div>
+  `).join('');
+}
+
+function buildProgress() {
+  const track = document.getElementById('progressTrack');
+  track.innerHTML = activeQuiz.questions.map(() => `<div class="progress-seg"></div>`).join('');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  document.getElementById('progressWrap').style.display = 'block';
+  current = 0;
+  answers.length = 0;
+  updateProgress();
+  showScreen('screen-q0');
+}
+
+function updateProgress() {
+  document.getElementById('stepLabel').textContent = activeQuiz.questions[current].label;
+  const segs = document.querySelectorAll('.progress-seg');
+  segs.forEach((s, i) => s.classList.toggle('done', i < current));
+}
+
+function goToNextQuestion(qIndex) {
+  if (qIndex + 1 < activeQuiz.questions.length) {
+    current = qIndex + 1;
+    updateProgress();
+    showScreen('screen-q' + current);
+  } else {
+    document.querySelectorAll('.progress-seg').forEach(s => s.classList.add('done'));
+    if (activeQuiz.showReaction) {
+      showReactionScreen();
+    } else {
+      startMatchSearch();
+    }
+  }
+}
+
+function fillAnswerPlaceholders(text) {
+  return text.replace(/\{answer(\d+)\}/g, (match, num) => {
+    const a = answers[Number(num) - 1];
+    const val = a && a.text ? a.text.trim() : '';
+    return val || '___';
+  });
+}
+
+function showReactionScreen() {
+  document.getElementById('reactionTag').textContent = activeQuiz.reactionTag;
+  document.getElementById('reactionTitle').innerHTML = activeQuiz.reactionTitle;
+  document.getElementById('reactionText').textContent = fillAnswerPlaceholders(activeQuiz.reactionText);
+  showScreen('screen-reaction');
+}
+
+function answer(qIndex, optionIndex) {
+  const opt = activeQuiz.questions[qIndex].options[optionIndex];
+  answers.push(opt);
+  goToNextQuestion(qIndex);
+}
+
+function advanceQuestion(qIndex) {
+  goToNextQuestion(qIndex);
+}
+
+function startMatchSearch() {
+  if (matchTimer) window.clearInterval(matchTimer);
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('loadingCount').textContent = '0';
+  document.getElementById('searchStatus').textContent = 'Reading your alignment...';
+  document.querySelectorAll('.search-step').forEach(step => step.classList.remove('done'));
+  showScreen('screen-search');
+
+  const statuses = [
+    { at: 4, text: 'Checking compatibility patterns...', step: 'step-compat' },
+    { at: 11, text: 'Searching compatible people nearby...', step: 'step-area' },
+    { at: 19, text: 'Filtering for matching energy...', step: 'step-vibe' },
+    { at: 24, text: '20+ compatible people found.' }
+  ];
+  let count = 0;
+  matchTimer = window.setInterval(() => {
+    count += 3;
+    if (count > 24) count = 24;
+    document.getElementById('loadingCount').textContent = String(count);
+    statuses.forEach(status => {
+      if (count >= status.at) {
+        document.getElementById('searchStatus').textContent = status.text;
+        if (status.step) document.getElementById(status.step).classList.add('done');
+      }
+    });
+    if (count === 24) {
+      window.clearInterval(matchTimer);
+      matchTimer = null;
+      window.setTimeout(showMatches, 300);
+    }
+  }, 110);
+}
+
+function setMatchesCopy() {
+  document.getElementById('matchesTitle').innerHTML = matchesContent.title;
+  document.getElementById('matchesTagline').textContent = matchesContent.tagline;
+  document.getElementById('matchesCta').textContent = matchesContent.ctaText;
+}
+
+function showMatches() {
+  revealBrand();
+  showScreen('screen-matches');
+}
+
+function revealBrand() {
+  document.getElementById('brandBlock').style.display = 'block';
+}
+
+/* ---------------------------------------------------------------
+   EVENTS / BOOKING FLOW
+   Shown after "Meet compatible gay men" — mirrors the real Mingleo
+   product's event list, booking confirmation, and event details
+   screens, so the recorded video flows straight from quiz into a
+   believable booking experience. Event data here is illustrative
+   only (not a real backend).
+--------------------------------------------------------------- */
+const mockEvents = [
+  { date: "Thursday, August 6", time: "7:00 PM", location: "West Hollywood Los Angeles" },
+  { date: "Wednesday, August 12", time: "7:00 PM", location: "West Hollywood Los Angeles" },
+  { date: "Thursday, August 20", time: "7:00 PM", location: "West Hollywood Los Angeles" }
+];
+
+let selectedEventIndex = 0;
+
+function showEventsScreen() {
+  document.getElementById('eventList').innerHTML = mockEvents.map((e, i) => `
+    <div class="event-card">
+      <div class="event-card-top">
+        <div class="event-icon">🍴</div>
+        <div>
+          <div class="event-type">Dinner</div>
+          <div class="event-date">${e.date}</div>
+          <div class="event-meta"><span>🕐 ${e.time}</span><span>📍 ${e.location}</span></div>
+        </div>
+      </div>
+      <button class="book-btn" onclick="bookEvent(${i})">Book your spot</button>
+    </div>
+  `).join('');
+  buildCityDropdown();
+  showScreen('screen-events');
+}
+
+const flagByCountry = { US: "🇺🇸", CA: "🇨🇦", AU: "🇦🇺", GB: "🇬🇧", IE: "🇮🇪" };
+
+const mingleoCities = [
+  "Atlanta, US", "Austin, US", "Baltimore, US", "Boston, US", "Brisbane, AU",
+  "Calgary, CA", "Charlotte, US", "Chicago, US", "Cleveland, US", "Columbus, US",
+  "Dallas, US", "Denver, US", "Detroit, US", "Dublin, IE", "Fort Lauderdale, US",
+  "Honolulu, US", "Houston, US", "Indianapolis, US", "Kansas City, US", "Las Vegas, US",
+  "London, GB", "Los Angeles, US", "Melbourne, AU", "Milwaukee, US", "Minneapolis, US",
+  "Montreal, CA", "Nashville, US", "New York City, US", "Orange County, US", "Orlando, US",
+  "Perth, AU", "Philadelphia, US", "Phoenix, US", "Portland, US", "Sacramento, US",
+  "San Antonio, US", "San Diego, US", "San Francisco, US", "San Jose, US", "Seattle, US",
+  "St. Louis, US", "Sydney, AU", "Tampa, US", "Toronto, CA", "Vancouver, CA",
+  "Washington DC, US"
+];
+
+let selectedCity = "Los Angeles, US";
+let cityDropdownOpen = false;
+
+function flagFor(cityLabel) {
+  const code = cityLabel.split(', ').pop();
+  return flagByCountry[code] || "🏳️";
+}
+
+function buildCityDropdown() {
+  const dropdown = document.getElementById('cityDropdown');
+  dropdown.innerHTML = mingleoCities.map(city => `
+    <button type="button" class="city-option${city === selectedCity ? ' selected' : ''}" onclick="selectCity('${city.replace(/'/g, "\\'")}')">
+      <span>${flagFor(city)}</span><span>${escapeHtml(city)}</span>
+    </button>
+  `).join('');
+}
+
+function toggleCityDropdown() {
+  cityDropdownOpen = !cityDropdownOpen;
+  document.getElementById('cityDropdown').classList.toggle('open', cityDropdownOpen);
+  document.getElementById('cityChevron').classList.toggle('open', cityDropdownOpen);
+}
+
+function selectCity(city) {
+  selectedCity = city;
+  document.getElementById('cityPillFlag').textContent = flagFor(city);
+  document.getElementById('cityPillName').textContent = city;
+  buildCityDropdown();
+  toggleCityDropdown();
+}
+
+function bookEvent(index) {
+  selectedEventIndex = index;
+  document.getElementById('bookingModal').classList.add('active');
+}
+
+function confirmBooking() {
+  document.getElementById('bookingModal').classList.remove('active');
+  const e = mockEvents[selectedEventIndex];
+  document.getElementById('eventDetailDate').textContent = e.date;
+  document.getElementById('eventDetailTime').textContent = e.time;
+  document.getElementById('eventDetailLocation').textContent = e.location;
+  showScreen('screen-event-details');
+}
+
+function cancelBooking() {
+  document.getElementById('bookingModal').classList.remove('active');
+  showEventsScreen();
+}
+
+function escapeForJsString(str) {
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r\n|\r|\n/g, '\\n');
+}
+
+function openQuestionEditor() {
+  const mount = document.getElementById('editQuestionsList');
+  mount.innerHTML = activeQuiz.questions.map((q, i) => `
+    <div class="editq-block">
+      <label>Question ${i + 1}</label>
+      <textarea id="editq${i}" rows="2">${escapeHtml(q.text)}</textarea>
+    </div>
+  `).join('');
+  document.getElementById('editHeadline').value = matchesContent.title.replace(/<br\s*\/?>/gi, '\n');
+  document.getElementById('editCta').value = matchesContent.ctaText;
+  showScreen('screen-edit-questions');
+}
+
+function saveQuestionsAndDownload() {
+  let html = pristineHTML;
+  let changedAny = false;
+  activeQuiz.questions.forEach((q, i) => {
+    const textarea = document.getElementById('editq' + i);
+    if (!textarea) return;
+    const edited = textarea.value.trim();
+    const original = q.text;
+    if (edited && edited !== original) {
+      const originalSource = escapeForJsString(original);
+      const editedSource = escapeForJsString(edited);
+      html = html.split(originalSource).join(editedSource);
+      q.text = edited;
+      changedAny = true;
+    }
+  });
+
+  const editedHeadline = document.getElementById('editHeadline').value.trim().replace(/\r\n|\r|\n/g, '<br>');
+  if (editedHeadline && editedHeadline !== matchesContent.title) {
+    const originalSource = escapeForJsString(matchesContent.title);
+    const editedSource = escapeForJsString(editedHeadline);
+    html = html.split(originalSource).join(editedSource);
+    matchesContent.title = editedHeadline;
+    changedAny = true;
+  }
+
+  const editedCta = document.getElementById('editCta').value.trim();
+  if (editedCta && editedCta !== matchesContent.ctaText) {
+    const originalSource = escapeForJsString(matchesContent.ctaText);
+    const editedSource = escapeForJsString(editedCta);
+    html = html.split(originalSource).join(editedSource);
+    matchesContent.ctaText = editedCta;
+    changedAny = true;
+  }
+
+  buildQuestions();
+  setMatchesCopy();
+  if (!changedAny) {
+    window.alert('No changes to save.');
+    return;
+  }
+  const blob = new Blob(['<!DOCTYPE html>\n' + html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'index.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  window.alert('Downloaded! Upload this index.html file to your GitHub repo to make the change live.');
+  showScreen('screen-quiz-picker');
+}
+
+function resetQuiz() {
+  if (matchTimer) window.clearInterval(matchTimer);
+  matchTimer = null;
+  current = 0;
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('brandBlock').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function escapeAttr(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function setDeep(obj, path, value) {
+  const parts = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const key = isNaN(parts[i]) ? parts[i] : Number(parts[i]);
+    cur = cur[key];
+  }
+  const lastKey = isNaN(parts[parts.length - 1]) ? parts[parts.length - 1] : Number(parts[parts.length - 1]);
+  cur[lastKey] = value;
+}
+
+function toggleOpenEndedUI(checkbox, qi) {
+  const block = document.getElementById('answersBlock' + qi);
+  if (block) block.style.display = checkbox.checked ? 'none' : '';
+}
+
+function buildEditorForm() {
+  const q = activeQuiz;
+  let html = `<p class="editor-note">Editing the <strong>${escapeHtml(q.name)}</strong> quiz. Changes save to this device only and apply the moment you tap Save &amp; preview.</p>`;
+
+  html += `<div class="editor-section">
+    <p class="editor-section-title">Intro</p>
+    <div class="editor-field"><label>Eyebrow</label><input type="text" data-path="eyebrow" value="${escapeAttr(q.eyebrow)}"></div>
+    <div class="editor-field"><label>Heading</label><input type="text" data-path="heading" value="${escapeAttr(q.heading)}"></div>
+    <div class="editor-field"><label>Subheading</label><textarea data-path="subheading" rows="2">${escapeHtml(q.subheading)}</textarea></div>
+  </div>`;
+
+  html += `<div class="editor-section"><p class="editor-section-title">Questions &amp; answers</p>`;
+  q.questions.forEach((question, qi) => {
+    html += `<div class="editor-question-block">
+      <div class="editor-field"><label>Question ${qi + 1}</label><textarea data-path="questions.${qi}.text" rows="2">${escapeHtml(question.text)}</textarea></div>
+      <label class="editor-toggle">
+        <input type="checkbox" data-path="questions.${qi}.openEnded" ${question.openEnded ? 'checked' : ''} onchange="toggleOpenEndedUI(this, ${qi})">
+        Open-ended (they answer out loud, no answer choices shown)
+      </label>
+      <div class="editor-answers-block" id="answersBlock${qi}"${question.openEnded ? ' style="display:none;"' : ''}>`;
+    question.options.forEach((opt, oi) => {
+      html += `<div class="editor-field"><label>Answer ${oi + 1}</label><textarea data-path="questions.${qi}.options.${oi}.text" rows="2">${escapeHtml(opt.text)}</textarea></div>`;
+    });
+    html += `</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="editor-section"><p class="editor-section-title">Reaction screen (optional, shown after the questions)</p>
+    <label class="editor-toggle">
+      <input type="checkbox" data-path="showReaction" ${q.showReaction ? 'checked' : ''}>
+      Show this screen before searching for matches
+    </label>
+    <div class="editor-field"><label>Tag</label><input type="text" data-path="reactionTag" value="${escapeAttr(q.reactionTag)}"></div>
+    <div class="editor-field"><label>Title</label><input type="text" data-path="reactionTitle" value="${escapeAttr(q.reactionTitle)}"></div>
+    <div class="editor-field"><label>Body text (press Enter for a line break)</label><textarea data-path="reactionText" rows="4">${escapeHtml(q.reactionText)}</textarea></div>
+  </div>`;
+
+  html += `<div class="editor-section"><p class="editor-section-title">Matches screen (shown after every quiz)</p>
+    <div class="editor-field"><label>Heading</label><textarea data-path="matches.title" rows="2">${escapeHtml(matchesContent.title)}</textarea></div>
+    <div class="editor-field"><label>Tagline</label><input type="text" data-path="matches.tagline" value="${escapeAttr(matchesContent.tagline)}"></div>`;
+  matchesContent.people.forEach((p, i) => {
+    html += `<div class="editor-field"><label>Seat ${i + 1} description</label><input type="text" data-path="matches.people.${i}" value="${escapeAttr(p)}"></div>`;
+  });
+  html += `<div class="editor-field"><label>Button text</label><input type="text" data-path="matches.ctaText" value="${escapeAttr(matchesContent.ctaText)}"></div>
+  </div>`;
+
+  document.getElementById('editorForm').innerHTML = html;
+}
+
+function openEditor() {
+  buildEditorForm();
+  showScreen('screen-editor');
+}
+
+function closeEditor() {
+  showScreen('screen-intro');
+}
+
+function saveEditor() {
+  document.querySelectorAll('#editorForm [data-path]').forEach(inp => {
+    const path = inp.getAttribute('data-path');
+    const value = inp.type === 'checkbox' ? inp.checked : inp.value;
+    if (path.startsWith('matches.')) {
+      setDeep(matchesContent, path.slice('matches.'.length), value);
+    } else {
+      setDeep(activeQuiz, path, value);
+    }
+  });
+  try {
+    localStorage.setItem('mingleoQuizOverride_' + activeSlug, JSON.stringify(activeQuiz));
+  } catch (e) { /* storage unavailable, edits still apply for this session */ }
+  try {
+    localStorage.setItem('mingleoMatchesOverride', JSON.stringify(matchesContent));
+  } catch (e) { /* storage unavailable, edits still apply for this session */ }
+  setIntroCopy();
+  buildQuestions();
+  buildProgress();
+  setMatchesCopy();
+  closeEditor();
+}
+
+function resetEditor() {
+  if (!window.confirm('Reset to the original wording? This removes your edits on this device.')) return;
+  try { localStorage.removeItem('mingleoQuizOverride_' + activeSlug); } catch (e) { /* storage unavailable */ }
+  try { localStorage.removeItem('mingleoMatchesOverride'); } catch (e) { /* storage unavailable */ }
+  quizzes[activeSlug] = cloneQuiz(activeSlug);
+  activeQuiz = quizzes[activeSlug];
+  matchesContent = cloneMatchesContent();
+  setIntroCopy();
+  buildQuestions();
+  buildProgress();
+  setMatchesCopy();
+  buildEditorForm();
+}
+
+setIntroCopy();
+buildQuestions();
+buildProgress();
+setMatchesCopy();
+buildQuizPicker();
+if (quizzes[requestedSlug]) {
+  showScreen('screen-intro');
+} else {
+  showScreen('screen-quiz-picker');
+}
+</script></body></html>
